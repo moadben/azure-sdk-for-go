@@ -163,6 +163,11 @@ func NewClient(accountName, accountKey, blobServiceBaseURL, apiVersion string, u
 	}, nil
 }
 
+// GetAPI returns the API Version, used for GetStandardHeaders.
+func (c Client) GetAPI() string {
+	return c.apiVersion
+}
+
 func (c Client) getBaseURL(service string) string {
 	scheme := "http"
 	if c.useHTTPS {
@@ -246,13 +251,6 @@ func (c Client) getAuthorizationHeader(verb, url string, headers map[string]stri
 
 	canonicalizedString := c.buildCanonicalizedString(verb, headers, canonicalizedResource)
 	return c.createAuthorizationHeader(canonicalizedString), nil
-}
-
-func (c Client) getStandardHeaders() map[string]string {
-	return map[string]string{
-		"x-ms-version": c.apiVersion,
-		"x-ms-date":    currentTimeRfc1123Formatted(),
-	}
 }
 
 func (c Client) getCanonicalizedAccountName() string {

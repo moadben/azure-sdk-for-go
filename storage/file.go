@@ -93,7 +93,7 @@ func pathForFileShare(name string) string {
 func (f FileServiceClient) ListShares(params ListSharesParameters) (ShareListResponse, error) {
 	q := mergeParams(params.getParameters(), url.Values{"comp": {"list"}})
 	uri := f.client.getEndpoint(fileServiceName, "", q)
-	headers := f.client.getStandardHeaders()
+	headers := GetStandardHeaders(f.client.GetAPI())
 
 	var out ShareListResponse
 	resp, err := f.client.exec("GET", uri, headers, nil)
@@ -123,7 +123,7 @@ func (f FileServiceClient) CreateShare(name string) error {
 // on the storage account, otherwise returns false.
 func (f FileServiceClient) ShareExists(name string) (bool, error) {
 	uri := f.client.getEndpoint(fileServiceName, pathForFileShare(name), url.Values{"restype": {"share"}})
-	headers := f.client.getStandardHeaders()
+	headers := GetStandardHeaders(f.client.GetAPI())
 
 	resp, err := f.client.exec("HEAD", uri, headers, nil)
 	if resp != nil {
@@ -165,7 +165,7 @@ func (f FileServiceClient) createShare(name string) (*storageResponse, error) {
 		return nil, err
 	}
 	uri := f.client.getEndpoint(fileServiceName, pathForFileShare(name), url.Values{"restype": {"share"}})
-	headers := f.client.getStandardHeaders()
+	headers := GetStandardHeaders(f.client.GetAPI())
 	return f.client.exec("PUT", uri, headers, nil)
 }
 
@@ -174,7 +174,7 @@ func (f FileServiceClient) createShare(name string) (*storageResponse, error) {
 func (f FileServiceClient) GetShareProperties(name string) (*ShareProperties, error) {
 	uri := f.client.getEndpoint(fileServiceName, pathForFileShare(name), url.Values{"restype": {"share"}})
 
-	headers := f.client.getStandardHeaders()
+	headers := GetStandardHeaders(f.client.GetAPI())
 	resp, err := f.client.exec("HEAD", uri, headers, nil)
 	if err != nil {
 		return nil, err
@@ -206,7 +206,7 @@ func (f FileServiceClient) SetShareProperties(name string, shareHeaders ShareHea
 	params.Set("comp", "properties")
 
 	uri := f.client.getEndpoint(fileServiceName, pathForFileShare(name), params)
-	headers := f.client.getStandardHeaders()
+	headers := GetStandardHeaders(f.client.GetAPI())
 
 	extraHeaders := headersFromStruct(shareHeaders)
 
@@ -261,7 +261,7 @@ func (f FileServiceClient) deleteShare(name string) (*storageResponse, error) {
 		return nil, err
 	}
 	uri := f.client.getEndpoint(fileServiceName, pathForFileShare(name), url.Values{"restype": {"share"}})
-	return f.client.exec("DELETE", uri, f.client.getStandardHeaders(), nil)
+	return f.client.exec("DELETE", uri, GetStandardHeaders(f.client.GetAPI()), nil)
 }
 
 // SetShareMetadata replaces the metadata for the specified Share.
@@ -278,7 +278,7 @@ func (f FileServiceClient) SetShareMetadata(name string, metadata map[string]str
 	params.Set("comp", "metadata")
 
 	uri := f.client.getEndpoint(fileServiceName, pathForFileShare(name), params)
-	headers := f.client.getStandardHeaders()
+	headers := GetStandardHeaders(f.client.GetAPI())
 	for k, v := range metadata {
 		headers[userDefinedMetadataHeaderPrefix+k] = v
 	}
@@ -308,7 +308,7 @@ func (f FileServiceClient) GetShareMetadata(name string) (map[string]string, err
 	params.Set("comp", "metadata")
 
 	uri := f.client.getEndpoint(fileServiceName, pathForFileShare(name), params)
-	headers := f.client.getStandardHeaders()
+	headers := GetStandardHeaders(f.client.GetAPI())
 
 	resp, err := f.client.exec("GET", uri, headers, nil)
 	if err != nil {

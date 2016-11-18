@@ -15,6 +15,14 @@ import (
 	"time"
 )
 
+// GetStandardHeaders returns the
+func GetStandardHeaders(api string) map[string]string {
+	return map[string]string{
+		"x-ms-version": api,
+		"x-ms-date":    currentTimeRfc1123Formatted(),
+	}
+}
+
 func (c Client) computeHmac256(message string) string {
 	h := hmac.New(sha256.New, c.accountKey)
 	h.Write([]byte(message))
