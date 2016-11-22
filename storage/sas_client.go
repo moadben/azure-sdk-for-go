@@ -30,8 +30,8 @@ type SASClient struct {
 	apiVersion  string
 }
 
-// NewBasicSASClient constructs a SASClient with given storage service name and
-// key.
+// NewBasicSASClient constructs a SASClient with a given storage name and
+// SAS key
 func NewBasicSASClient(accountName, sasKey string) (SASClient, error) {
 	return NewSASClient(sasKey, accountName, DefaultBaseURL, DefaultAPIVersion, defaultUseHTTPS)
 }
@@ -236,8 +236,8 @@ func (c SASClient) exec(verb, url string, headers map[string]string, body io.Rea
 		return nil, errors.New("azure/storage: error creating request: " + err.Error())
 	}
 	query := req.URL.Query()
-	req.URL.RawQuery = c.sasKey[1:] + "&" + query.Encode()
-	fmt.Println(req.URL.String())
+	req.URL.RawQuery = c.sasKey + "&" + query.Encode()
+	// fmt.Println(req.URL.String())
 	if clstr, ok := headers["Content-Length"]; ok {
 		// content length header is being signed, but completely ignored by golang.
 		// instead we have to use the ContentLength property on the request struct
